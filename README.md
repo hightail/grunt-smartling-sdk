@@ -8,7 +8,7 @@ This plugin requires Grunt.
 If you haven't used [Grunt](http://gruntjs.com/) before, be sure to check out the [Getting Started](http://gruntjs.com/getting-started) guide, as it explains how to create a [Gruntfile](http://gruntjs.com/sample-gruntfile) as well as install and use Grunt plugins. Once you're familiar with that process, you may install this plugin with this command:
 
 ```shell
-npm install grunt-smartling-sdk --save-dev
+npm install grunt-smartling-sdk
 ```
 
 Once the plugin has been installed, it may be enabled inside your Gruntfile with this line of JavaScript:
@@ -20,34 +20,56 @@ grunt.loadNpmTasks('grunt-smartling-sdk');
 ## The "smartling_sdk" task
 
 ### Overview
-In your project's Gruntfile, add a section named `smartling_sdk` to the data object passed into `grunt.initConfig()`.
+In your project's Gruntfile, add a section for each task you want to use in `grunt.initConfig()`.
 
 ```js
 grunt.initConfig({
-  smartling_sdk: {
+  smartling_list: {
     options: {
       // Task-specific options go here.
+      smartling: {
+        apiBaseUrl: SmartlingSdk.API_BASE_URLS.SANDBOX,
+        apiKey: '',
+        projectId: ''
+      }
     },
     your_target: {
       // Target-specific file lists and/or options go here.
     },
-  },
+  }
 })
 ```
 
 ### Options
 
-#### options.separator
-Type: `String`
-Default value: `',  '`
+#### options.smartling
+Type: `Object`
+Default value: `None`
 
-A string value that is used to do something with whatever.
+An object with your Smartling API and Project settings. This is require for all smartling tasks
 
-#### options.punctuation
-Type: `String`
-Default value: `'.'`
+```js
+{
+  apiBaseUrl: SmartlingSdk.API_BASE_URLS.LIVE,
+  apiKey: 'your-api-key',
+  projectId: 'your-project-id'
+}
+```
 
-A string value that is used to do something else with whatever else.
+#### options.operation
+Type: `Object`
+Default value: `None`
+
+A object that is used to set Smartling options for a given operation (status, get, upload, etc).
+
+Example options.operation for `smartling_upload`
+
+```js
+{
+  fileType: 'json',
+  approved: false
+}
+```
 
 ### Usage Examples
 
@@ -89,4 +111,4 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
 _(Nothing yet)_
 
 ## License
-Copyright (c) 2014 Justin Fiedler. Licensed under the ISC license.
+Copyright (c) 2014 Hightail. Licensed under the ISC license.

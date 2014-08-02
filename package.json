@@ -1,6 +1,6 @@
 {
   "name": "grunt-smartling-sdk",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "description": "Grunt tasks for smartling-sdk",
   "homepage": "https://github.com/hightail/grunt-smartling-sdk",
   "repository": "git://github.com/hightail/grunt-smartling-sdk.git",
