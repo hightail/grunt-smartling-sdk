@@ -11,59 +11,44 @@
 'use strict';
 
 module.exports = function (grunt) {
-  var SmartlingSdk = require('smartling-sdk'),
-      asyncUtil    = require('async'),
-      logJson      = require('../lib/log-json')(grunt),
+  var asyncUtil    = require('async'),
+      SmartlingTask = require('../lib/smartling-task'),
       StatusStats  = require('../lib/status-stats');
 
-  grunt.registerMultiTask('smartling_status', 'Get status of files in Smartling', function () {
-    var done = this.async();
+  grunt.registerMultiTask('smartling_status', 'Get status of files in Smartling',
+    SmartlingTask.make(function (task, options, sdk, done, logJson) {
+      var stats = new StatusStats();
 
-    // Merge task-specific and/or target-specific options with these defaults.
-    var options = this.options(this.data);
+      var fileUris = task.getFileUris();
 
-    var sdk = new SmartlingSdk(options.smartling.apiBaseUrl, options.smartling.apiKey, options.smartling.projectId);
+      asyncUtil.eachLimit(fileUris, 10, function(fileUri, callback) {
+        sdk.status(fileUri, options.operation.locale)
+          .then(function(statusInfo) {
+            if (options.verbose) {
+              logJson(statusInfo);
+            }
+            stats.appendSuccess(fileUri, statusInfo);
+            callback();
+          })
+          .fail(function(error) {
+            if (options.verbose) {
+              logJson(error);
+            }
+            stats.appendError(fileUri);
+            callback();
+          });
+      }, function(err) {
+        // This is a callback for when all fileUris have completed
+        var statusInfo = stats.getInfo();
+        logJson(statusInfo);
+        if (err || statusInfo.files.failed.length > 0) {
+          console.log('ERROR Getting status of files from Smartling!!!');
 
-    var stats = new StatusStats();
-
-    if (this.files) {
-      this.files.forEach(function(file) {
-        //logJson(file);
-
-        asyncUtil.eachLimit(file.src, 10, function(filepath, callback) {
-          var fileUri = options.fileUriFunc(filepath);
-
-          sdk.status(fileUri, options.operation.locale)
-            .then(function(statusInfo) {
-              if (options.verbose) {
-                logJson(statusInfo);
-              }
-              stats.appendSuccess(fileUri, statusInfo);
-              callback();
-            })
-            .fail(function(error) {
-              if (options.verbose) {
-                logJson(error);
-              }
-              stats.appendError(fileUri);
-              callback();
-            });
-        }, function(err) {
-          // This is a callback for when all fileUris have completed
-          var statusInfo = stats.getInfo();
-          logJson(statusInfo);
-          if (err || statusInfo.files.failed.length > 0) {
-            console.log('ERROR Getting status of files from Smartling!!!');
-
-            done(statusInfo);
-          } else {
-            done();
-          }
-        });
+          done(statusInfo);
+        } else {
+          done();
+        }
       });
-    } else {
-      grunt.log.writeln('No files provided.');
-      done(false);
-    }
-  });
+    })
+  );
 };

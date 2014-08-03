@@ -11,36 +11,26 @@
 'use strict';
 
 module.exports = function (grunt) {
-  var SmartlingSdk = require('smartling-sdk'),
+  var SmartlingTask = require('../lib/smartling-task'),
       asyncUtil    = require('async'),
       path         = require('path'),
-      logJson      = require('../lib/log-json')(grunt),
       GetStats     = require('../lib/get-stats');
 
-  grunt.registerMultiTask('smartling_get', 'Get files from Smartling', function () {
-    var done = this.async();
+  grunt.registerMultiTask('smartling_get', 'Get files from Smartling',
+    SmartlingTask.make(function (task, options, sdk, done, logJson) {
+      var stats = new GetStats();
+      var outputDirectory = options.dest;
 
-    // Merge task-specific and/or target-specific options with these defaults.
-    var options = this.options(this.data);
+      var fileUris = task.getFileUris();
 
-    var sdk = new SmartlingSdk(options.smartling.apiBaseUrl, options.smartling.apiKey, options.smartling.projectId);
-    var stats = new GetStats();
-    var outputDirectory = options.dest;
-
-    if (this.files) {
-      this.files.forEach(function(file) {
-        //logJson(file);
-        asyncUtil.eachLimit(file.src, 10, function(filepath, callback) {
-          var fileUri = options.fileUriFunc(filepath);
-          //logJson(statusInfo);
+      asyncUtil.eachLimit(fileUris, 10, function (fileUri, callback) {
           var destFilepath;
           if (outputDirectory) {
             destFilepath = path.join(outputDirectory, fileUri);
           }
 
           sdk.get(fileUri, destFilepath, options.operation)
-            .then(function(fileContents) {
-              //logJson(fileContents);
+            .then(function (fileContents) {
               if (outputDirectory) {
                 if (options.verbose) {
                   console.log("Successfully saved: " + destFilepath);
@@ -53,29 +43,26 @@ module.exports = function (grunt) {
               stats.appendSuccess(destFilepath || fileUri);
               callback();
             })
-            .fail(function(error) {
+            .fail(function (error) {
               if (options.verbose) {
                 logJson(error);
               }
               stats.appendError(destFilepath || fileUri);
               callback();
             });
-        });
-      }, function(err) {
-        // This is a callback for when all fileUris have completed
-        var statusInfo = stats.getInfo();
-        logJson(statusInfo);
-        if (err || statusInfo.files.failed.length > 0) {
-          console.log('ERROR Getting Component Translation files!!!');
+        }, function (err) {
+          // This is a callback for when all fileUris have completed
+          var statusInfo = stats.getInfo();
+          logJson(statusInfo);
+          if (err || statusInfo.files.failed.length > 0) {
+            console.log('ERROR Getting Component Translation files!!!');
 
-          done(statusInfo);
-        } else {
-          done();
+            done(statusInfo);
+          } else {
+            done();
+          }
         }
-      });
-    } else {
-      grunt.log.writeln('No files provided.');
-      done(false);
-    }
-  });
+      );
+    })
+  );
 };

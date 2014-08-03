@@ -38,6 +38,15 @@ module.exports = function (grunt) {
     return filepath.slice(slashIndex);
   };
 
+  /**
+   * Function to generate a RENAMED fileUri given a @filepath
+   *
+   * @param filepath
+   * @returns {*}
+   */
+  var renameFileUriFunc = function(fileUri) {
+    return 'renamed-' + fileUri;
+  };
 
   // Project configuration.
   grunt.initConfig({
@@ -132,6 +141,25 @@ module.exports = function (grunt) {
       }
     },
 
+    smartling_rename: {
+      options: {
+        smartling: smartlingOptions,
+        fileUriFunc: fileUriFunc,
+        newFileUriFunc: renameFileUriFunc,
+        verbose: false
+      },
+      one: {
+        src: 'test/fixtures/translations.json'
+      },
+      all: {
+        src: 'test/fixtures/*.json',
+        fileUris: [
+          'renamed-translations.json',
+          'renamed-more-translations.json'
+        ]
+      }
+    },
+
     smartling_delete: {
       options: {
         smartling: smartlingOptions,
@@ -143,6 +171,14 @@ module.exports = function (grunt) {
       },
       all: {
         src: 'test/fixtures/*.json'
+      },
+      list: {
+        fileUris: [
+          'renamed-translations.json',
+          'renamed-more-translations.json',
+          'renamed-renamed-translations.json',
+          'renamed-renamed-more-translations.json'
+        ]
       }
     }
   });

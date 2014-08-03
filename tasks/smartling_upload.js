@@ -11,56 +11,48 @@
 'use strict';
 
 module.exports = function (grunt) {
-  var SmartlingSdk = require('smartling-sdk'),
-      asyncUtil    = require('async'),
-      logJson      = require('../lib/log-json')(grunt),
+  var asyncUtil    = require('async'),
+      SmartlingTask = require('../lib/smartling-task'),
       UploadStats  = require('../lib/upload-stats');
 
-  grunt.registerMultiTask('smartling_upload', 'Upload files to Smartling', function () {
-    var done = this.async();
+  grunt.registerMultiTask('smartling_upload', 'Upload files to Smartling',
+    SmartlingTask.make(function (task, options, sdk, done, logJson) {
+      var stats = new UploadStats();
 
-    // Merge task-specific and/or target-specific options with these defaults.
-    var options = this.options(this.data);
+      if (task.files) {
+        task.files.forEach(function (file) {
+          //logJson(file);
 
-    var sdk = new SmartlingSdk(options.smartling.apiBaseUrl, options.smartling.apiKey, options.smartling.projectId);
-    var stats = new UploadStats();
+          asyncUtil.eachLimit(file.src, 10, function (filepath, callback) {
+            var fileUri = options.fileUriFunc(filepath);
 
-    if (this.files) {
-      this.files.forEach(function(file) {
-        //logJson(file);
+            sdk.upload(filepath, fileUri, options.operation.fileType)
+              .then(function (fileInfo) {
+                //logJson(fileInfo);
+                stats.appendSuccess(fileUri, fileInfo);
+                callback();
+              })
+              .fail(function (error) {
+                if (options.verbose) {
+                  logJson(error);
+                }
+                stats.appendError(fileUri);
+                callback();
+              });
+          }, function (err) {
+            // This is a callback for when all fileUris have completed
+            var statusInfo = stats.getInfo();
+            logJson(statusInfo);
+            if (err || statusInfo.files.failed.length > 0) {
+              console.log('ERROR Uploading Component Translation files!!!');
 
-        asyncUtil.eachLimit(file.src, 10, function(filepath, callback) {
-          var fileUri = options.fileUriFunc(filepath);
-
-          sdk.upload(filepath, fileUri, options.operation.fileType)
-            .then(function(fileInfo) {
-              //logJson(fileInfo);
-              stats.appendSuccess(fileUri, fileInfo);
-              callback();
-            })
-            .fail(function(error) {
-              if (options.verbose) {
-                logJson(error);
-              }
-              stats.appendError(fileUri);
-              callback();
-            });
-        }, function(err) {
-          // This is a callback for when all fileUris have completed
-          var statusInfo = stats.getInfo();
-          logJson(statusInfo);
-          if (err || statusInfo.files.failed.length > 0) {
-            console.log('ERROR Uploading Component Translation files!!!');
-
-            done(statusInfo);
-          } else {
-            done();
-          }
+              done(statusInfo);
+            } else {
+              done();
+            }
+          });
         });
-      });
-    } else {
-      grunt.log.writeln('No files provided.');
-      done(false);
-    }
-  });
+      }
+    })
+  );
 };
