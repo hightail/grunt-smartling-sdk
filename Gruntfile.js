@@ -13,14 +13,9 @@
 module.exports = function (grunt) {
   // load all npm grunt tasks
   require('load-grunt-tasks')(grunt);
-  var SmartlingSdk = require('smartling-sdk');
 
   //Config this with your Smartling settings
-  var smartlingOptions = {
-    apiBaseUrl: SmartlingSdk.API_BASE_URLS.SANDBOX,
-    apiKey: '',
-    projectId: ''
-  };
+  var smartlingOptions = require('./test/smartling-config.json');
 
   /**
    * Function to generate a fileUri given a @filepath
