@@ -107,6 +107,18 @@ module.exports = function (grunt) {
       },
       all: {
         src: 'test/fixtures/*.json'
+      },
+      placeholder: {
+        options: {
+          operation: {
+            fileType: 'json',
+            approved: false,
+            smartling: {
+              placeholder_format_custom: '__.+?__'
+            }
+          }
+        },
+        src: 'test/fixtures/*.json'
       }
     },
 

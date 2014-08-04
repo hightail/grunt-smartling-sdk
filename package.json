@@ -1,6 +1,6 @@
 {
   "name": "grunt-smartling-sdk",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Grunt tasks for smartling-sdk",
   "homepage": "https://github.com/hightail/grunt-smartling-sdk",
   "repository": "git://github.com/hightail/grunt-smartling-sdk.git",
@@ -30,7 +30,7 @@
     "test": "grunt test"
   },
   "dependencies": {
-    "smartling-sdk": "^0.2.1",
+    "smartling-sdk": "^0.2.2",
     "async": "^0.9.0",
     "lodash": "^2.4.1"
   }
