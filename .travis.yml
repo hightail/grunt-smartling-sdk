@@ -1,0 +1,13 @@
+language: node_js
+node_js:
+- '0.10'
+- '0.11'
+deploy:
+  provider: npm
+  email: mark@segfawlt.net
+  api_key:
+    secure: Bgr4YkEVdfbjv4/qiNzhmVRFBAQoQRaO7ICqwXeqjHeKCGmodxuytPq5QTJnCEKTSye+Y5UuHnILwhFWMrdHw8FapDJBekBbFPNjJxbgFNevNFsPLnaUq/rUw7/pV6ZHIxGFI8dOeBMHwgPTvEb7mbmwPvszNtk4Wdaqw9HSWkQ=
+  on:
+    tags: true
+    repo: hightail/grunt-smartling-sdk
+    all_branches: true
