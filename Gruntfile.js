@@ -133,11 +133,46 @@ module.exports = function (grunt) {
         dest: './test/downloads'
       },
       dl_de: {
-        operation: {
-          locale: 'de'
+        options: {
+          operation: {
+            locale: 'de-DE'
+          }
         },
         src: 'test/fixtures/*.json',
         dest: './test/downloads/de'
+      },
+      array: {
+        locales: [
+          'de-DE',
+          'en',
+          'es',
+          'fr',
+          'it-IT',
+          'nl-NL',
+          'pt-BR',
+          'ru-RU'
+        ],
+        src: 'test/fixtures/*.json',
+        dest: './test/downloads/array'
+      },
+      map: {
+        options: {
+          destFileUriFunc: function(fileUri) {
+            return 'mod-' + fileUri;
+          }
+        },
+        locales: {
+          'de-DE': 'de',
+          'en': 'en',
+          'es': 'es',
+          'fr': 'fr',
+          'it-IT': 'it',
+          'nl-NL': 'nl',
+          'pt-BR': 'pt-BR',
+          'ru-RU': 'ru'
+        },
+        src: 'test/fixtures/*.json',
+        dest: './test/downloads/map/'
       }
     },
 
