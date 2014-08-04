@@ -1,4 +1,4 @@
-# grunt-smartling-sdk
+# grunt-smartling-sdk [![Build Status](https://travis-ci.org/hightail/grunt-smartling-sdk.svg?branch=master)](https://travis-ci.org/hightail/grunt-smartling-sdk)
 
 > Grunt tasks for smartling-sdk
 
