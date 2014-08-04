@@ -71,38 +71,59 @@ Example options.operation for `smartling_upload`
 }
 ```
 
+#### options.fileUriFunc
+Type: `Function`
+Default value: `None`
+
+When options.src is used to provide files, this function is used to generate fileUri's from the filepaths.
+
+Example in `smartling_upload` this will used each files 'basename' as its fileUri
+
+```js
+smartling_upload: {
+  options: {
+    smartling: { ... },
+    operation: {
+      fileType: 'json',
+      approved: false
+    },
+    fileUriFunc: function(filepath) {
+      return path.basename(filepath);
+    }
+  },
+  default: {
+    src: 'path/to/translations/*.json'
+  }
+}
+```
+
+#### options.verbose
+Type: `Boolean`
+Default value: `false`
+
+If true extra debugging information will be logged to the console.
+
+```js
+smartling_status: {
+  options: {
+    smartling: { ... },
+    operation: {
+      locale: 'en',
+    },
+    fileUriFunc: function(filepath) {
+      return path.basename(filepath);
+    },
+    verbose: true
+  },
+  default: {
+    src: 'path/to/translations/*.json'
+  }
+}
+```
+
 ### Usage Examples
 
-#### Default Options
-In this example, the default options are used to do something with whatever. So if the `testing` file has the content `Testing` and the `123` file had the content `1 2 3`, the generated result would be `Testing, 1 2 3.`
-
-```js
-grunt.initConfig({
-  smartling_sdk: {
-    options: {},
-    files: {
-      'dest/default_options': ['src/testing', 'src/123'],
-    },
-  },
-})
-```
-
-#### Custom Options
-In this example, custom options are used to do something else with whatever else. So if the `testing` file has the content `Testing` and the `123` file had the content `1 2 3`, the generated result in this case would be `Testing: 1 2 3 !!!`
-
-```js
-grunt.initConfig({
-  smartling_sdk: {
-    options: {
-      separator: ': ',
-      punctuation: ' !!!',
-    },
-    files: {
-      'dest/default_options': ['src/testing', 'src/123'],
-    },
-  },
-})
-```
+See Gruntfile.js for usage examples
 
 ## Contributing
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
