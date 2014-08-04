@@ -75,7 +75,7 @@ Example options.operation for `smartling_upload`
 Type: `Function`
 Default value: `None`
 
-When options.src is used to provide files, this function is used to generate fileUri's from the filepaths.
+When `src` is used to provide files, this function is used to generate fileUri's from the filepaths.
 
 Example in `smartling_upload` this will used each files 'basename' as its fileUri
 
