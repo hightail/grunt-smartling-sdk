@@ -26,7 +26,7 @@ module.exports = function (grunt) {
           asyncUtil.eachLimit(file.src, 10, function (filepath, callback) {
             var fileUri = options.fileUriFunc(filepath);
 
-            sdk.upload(filepath, fileUri, options.operation.fileType)
+            sdk.upload(filepath, fileUri, options.operation.fileType, options.operation)
               .then(function (fileInfo) {
                 //logJson(fileInfo);
                 stats.appendSuccess(fileUri, fileInfo);
