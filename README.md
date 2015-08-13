@@ -121,6 +121,24 @@ smartling_status: {
 }
 ```
 
+#### options.concurrentTransfers
+Type: `Integer`
+Default value: `10`
+
+When `concurrentTransfers` is provided, it will limit the number of current transfers to the provided number. This is useful to avoid hitting Smartling's API limits by requesting too many files at a time.
+
+```js
+smartling_get: {
+  options: {
+    smartling: { ... }
+    concurrentTransfers: 5
+  },
+  default: {
+    src: 'path/to/translations/*.json'
+  }
+}
+```
+
 ### Usage Examples
 
 See Gruntfile.js for usage examples
