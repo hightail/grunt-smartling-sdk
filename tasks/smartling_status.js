@@ -11,17 +11,19 @@
 'use strict';
 
 module.exports = function (grunt) {
-  var asyncUtil    = require('async'),
-      SmartlingTask = require('../lib/smartling-task'),
-      StatusStats  = require('../lib/status-stats');
+  var asyncUtil      = require('async'),
+      SmartlingTask  = require('../lib/smartling-task'),
+      StatusStats    = require('../lib/status-stats'),
+      configDefaults = require('./config_defaults');
 
   grunt.registerMultiTask('smartling_status', 'Get status of files in Smartling',
     SmartlingTask.make(function (task, options, sdk, done, logJson) {
       var stats = new StatusStats();
+      var concurrentTransfers = options.concurrentTransfers || configDefaults.concurrentTransfers;
 
       var fileUris = task.getFileUris();
 
-      asyncUtil.eachLimit(fileUris, 10, function(fileUri, callback) {
+      asyncUtil.eachLimit(fileUris, concurrentTransfers, function(fileUri, callback) {
         sdk.status(fileUri, options.operation.locale)
           .then(function(statusInfo) {
             if (options.verbose) {

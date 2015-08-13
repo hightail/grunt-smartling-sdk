@@ -11,16 +11,19 @@
 'use strict';
 
 module.exports = function (grunt) {
-  var SmartlingTask = require('../lib/smartling-task'),
-      asyncUtil    = require('async'),
-      _            = require('lodash'),
-      path         = require('path'),
-      GetStats     = require('../lib/get-stats');
+  var SmartlingTask  = require('../lib/smartling-task'),
+      asyncUtil      = require('async'),
+      _              = require('lodash'),
+      path           = require('path'),
+      GetStats       = require('../lib/get-stats'),
+      configDefaults = require('./config_defaults');
+
 
   grunt.registerMultiTask('smartling_get', 'Get files from Smartling',
     SmartlingTask.make(function (task, options, sdk, done, logJson) {
       var stats = new GetStats();
       var outputDirectory = options.dest;
+      var concurrentTransfers = options.concurrentTransfers || configDefaults.concurrentTransfers;
 
       var fileUris = task.getFileUris();
       var destFileUriFunc = options.destFileUriFunc || function(fileUri) {
@@ -44,7 +47,7 @@ module.exports = function (grunt) {
       }
 
       asyncUtil.each(locales, function(locale, localeCallback) {
-        asyncUtil.eachLimit(fileUris, 10, function (fileUri, fileCallback) {
+        asyncUtil.eachLimit(fileUris, concurrentTransfers, function (fileUri, fileCallback) {
             var destFilepath;
             if (outputDirectory) {
               //check to modufy the destination fileUri

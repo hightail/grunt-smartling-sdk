@@ -11,18 +11,20 @@
 'use strict';
 
 module.exports = function (grunt) {
-  var SmartlingTask = require('../lib/smartling-task'),
-      asyncUtil    = require('async'),
-      path         = require('path'),
-      RenameStats     = require('../lib/rename-stats');
+  var SmartlingTask  = require('../lib/smartling-task'),
+      asyncUtil      = require('async'),
+      path           = require('path'),
+      RenameStats    = require('../lib/rename-stats'),
+      configDefaults = require('./config_defaults');
 
   grunt.registerMultiTask('smartling_rename', 'Rename files in Smartling',
     SmartlingTask.make(function (task, options, sdk, done, logJson) {
       var stats = new RenameStats();
+      var concurrentTransfers = options.concurrentTransfers || configDefaults.concurrentTransfers;
 
       var fileUris = task.getFileUris();
 
-      asyncUtil.eachLimit(fileUris, 10,
+      asyncUtil.eachLimit(fileUris, concurrentTransfers,
         function (fileUri, callback) {
           var newFileUri = options.newFileUriFunc(fileUri);
 

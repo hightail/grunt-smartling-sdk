@@ -11,19 +11,21 @@
 'use strict';
 
 module.exports = function (grunt) {
-  var asyncUtil    = require('async'),
-      SmartlingTask = require('../lib/smartling-task'),
-      UploadStats  = require('../lib/upload-stats');
+  var asyncUtil      = require('async'),
+      SmartlingTask  = require('../lib/smartling-task'),
+      UploadStats    = require('../lib/upload-stats'),
+      configDefaults = require('./config_defaults');
 
   grunt.registerMultiTask('smartling_upload', 'Upload files to Smartling',
     SmartlingTask.make(function (task, options, sdk, done, logJson) {
       var stats = new UploadStats();
+      var concurrentTransfers = options.concurrentTransfers || configDefaults.concurrentTransfers;
 
       if (task.files) {
         task.files.forEach(function (file) {
           //logJson(file);
 
-          asyncUtil.eachLimit(file.src, 10, function (filepath, callback) {
+          asyncUtil.eachLimit(file.src, concurrentTransfers, function (filepath, callback) {
             var fileUri = options.fileUriFunc(filepath);
 
             sdk.upload(filepath, fileUri, options.operation.fileType, options.operation)
